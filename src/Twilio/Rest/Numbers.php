@@ -11,6 +11,8 @@ namespace Twilio\Rest;
 
 use Twilio\Domain;
 use Twilio\Exceptions\TwilioException;
+use Twilio\Http\File;
+use Twilio\Http\Response;
 use Twilio\Rest\Numbers\V2;
 
 /**
@@ -29,6 +31,43 @@ class Numbers extends Domain {
         parent::__construct($client);
 
         $this->baseUrl = 'https://numbers.twilio.com';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function request(
+        string $method,
+        string $uri,
+        array $params = [],
+        array $data = [],
+        array $headers = [],
+        string $user = null,
+        string $password = null,
+        int $timeout = null
+    ): Response {
+        // See https://github.com/twilio/twilio-php/pull/660#pullrequestreview-505828724
+        if (isset($data['File']) && $data['File'] instanceof File) {
+            $originalDomain = $this->baseUrl;
+            $this->baseUrl = 'https://numbers-upload.twilio.com';
+        }
+
+        $result = parent::request(
+            $method,
+            $uri,
+            $params,
+            $data,
+            $headers,
+            $user,
+            $password,
+            $timeout
+        );
+
+        if (isset($originalDomain)) {
+            $this->baseUrl = $originalDomain;
+        }
+
+        return $result;
     }
 
     /**

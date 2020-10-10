@@ -62,7 +62,7 @@ class SupportingDocumentTest extends HolodeckTestCase {
 
         $this->assertRequest(new Request(
             'post',
-            'https://numbers.twilio.com/v2/RegulatoryCompliance/SupportingDocuments',
+            'https://numbers-upload.twilio.com/v2/RegulatoryCompliance/SupportingDocuments',
             null,
             $values
         ));
